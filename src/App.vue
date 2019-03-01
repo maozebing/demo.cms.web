@@ -5,9 +5,18 @@
 </template>
 
 <script>
-export default {
-  name: 'App'
-}
+  export default {
+    name: 'App',
+    mounted() {
+      this.$nextTick(() => {
+        window.onresize = () => {
+          return (() => {
+            this.$root.$emit('fullScreen');
+          })()
+        }
+      })
+    }
+  }
 </script>
 
 <style>

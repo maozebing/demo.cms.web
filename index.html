@@ -11,9 +11,19 @@
         font-family: '微软雅黑' !important;
       }
     </style>
+    <script>
+      window.axiosBaseURL = 'http://app.gstscc.cn:9011/api/';
+      window.mapCenter = [100.79957, 37.243287];
+      window.mapZooms = [6, 20];
+      window.mapZoom = 7;
+      window.mapMarkerZoom = 11;
+      window.mapStyle = 'amap://styles/af1834c641b7f7733ae2a58dcd27b0aa';
+      window.mapArea = 620000;
+    </script>
   </head>
   <body>
     <div id="app"></div>
-    <!-- built files will be auto injected -->
+    <script type="text/javascript" src="http://webapi.amap.com/maps?v=1.4.4&key=2105e54507140bc7eeebb6db77737a69"></script>
+    <script src="//webapi.amap.com/ui/1.0/main.js?v=1.0.11"></script>
   </body>
 </html>

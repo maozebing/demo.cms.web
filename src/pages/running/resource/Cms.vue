@@ -30,7 +30,7 @@
 </template>
 <script>
   import Bus from '../../../bus/bus'
-  import {api_getCmss} from "../../../axios/api/cms_api";
+  import {api_listCms} from "../../../axios/api/cms_api";
 
   export default {
     components: {},
@@ -46,7 +46,7 @@
       },
 
       initData() {
-        api_getCmss({}).then(res=>{
+        api_listCms({}).then(res=>{
           this.cmsData=res.data;
 
           let params = {

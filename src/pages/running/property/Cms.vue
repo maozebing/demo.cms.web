@@ -96,7 +96,7 @@
             </i-col>
           </Row>
           <div style="height: 40px;text-align: right;margin-top: 20px">
-            <Button type="primary" @click="">添加到常用库</Button>
+            <Button type="primary" @click="openCmsTemplateTypeModal">添加到常用库</Button>
             <Button type="primary" @click="">选择常用库</Button>
             <Button type="primary" @click="">选择情报板</Button>
             <Button type="primary" @click="addToSendList">添加到列表</Button>
@@ -138,10 +138,37 @@
         </Col>
       </Row>
     </div>
+    <Modal
+      v-model="cmsTemplateTypeModal"
+      title="常用库类型列表" :styles="{top: '50px'}">
+      <div>
+        <Row>
+          <Col span="24">
+            <Form inline style="text-align: left;margin-left:10px;margin-bottom: -14px">
+              <FormItem>
+                <span>常用库类型:</span>
+              </FormItem>
+              <Form-item>
+                <Select v-model="cmsTemplateTypeSelected" style="width:200px;text-align: left">
+                  <Option v-for="item in cmsTemplateTypeList" :value="item.id" :key="item.id">
+                    {{ item.name }}
+                  </Option>
+                </Select>
+              </Form-item>
+            </Form>
+          </Col>
+        </Row>
+      </div>
+      <div slot="footer">
+        <Button type="text" @click="cmsTemplateTypeModal=false">关闭</Button>
+        <Button type="primary" @click="saveCmsTemplate">确定</Button>
+      </div>
+    </Modal>
   </Modal>
 </template>
 <script>
   import {VueTabs, VTab} from 'vue-nav-tabs'
+  import {api_listCmsSizeType, api_listCmsTemplateType,api_saveCmsTemplate} from "../../../axios/api/cms_api";
 
   export default {
     name: 'cmsProperty',
@@ -182,7 +209,11 @@
           cmsPicTypeList: []
         },
         cmsSelectedList: [],
-        cmsSendList: []
+        cmsSendList: [],
+        cmsSizeTypeList: [],
+        cmsTemplateTypeList: [],
+        cmsTemplateTypeModal: false,
+        cmsTemplateTypeSelected: '',
       }
     },
     watch: {
@@ -207,6 +238,69 @@
         this.dicData.cmsPicTypeList = this.$constant.CMS_PIC_TYPE;
         this.dicData.playTypeList = this.$constant.PLAY_TYPE;
       },
+      //获取情报板大小类型
+      listCmsSizeType() {
+        api_listCmsSizeType({}).then(res => {
+          this.cmsSizeTypeList = res.data;
+        }).catch(err => {
+
+        })
+      },
+      //获取情报板模板类型
+      listCmsTemplateType() {
+        api_listCmsTemplateType({}).then(res => {
+          this.cmsTemplateTypeList = res.data;
+        }).catch(err => {
+
+        })
+      },
+      //打开情报板模板类型选择窗口
+      openCmsTemplateTypeModal(){
+        if (this.editEntity.content == "") {
+          this.$Notice.warning({
+            title: '警告提示',
+            desc: '发送内容不能为空！'
+          });
+          return
+        }
+        this.cmsTemplateTypeModal = true;
+        this.cmsTemplateTypeSelected = this.cmsTemplateTypeList[0].id;
+      },
+      //保存情报板模板数据
+      saveCmsTemplate() {
+        let sizeType;
+        this.cmsSizeTypeList.forEach(v => {
+          if (v.width == this.propertyValue.data.width && v.height == this.propertyValue.data.height) {
+            sizeType = v.id;
+          }
+        });
+
+        let cmsTemplateEntity = {
+          height: this.editEntity.height,
+          width: this.editEntity.width,
+          content: this.editEntity.content,
+          picContent: this.editEntity.picContent,
+          delay: this.editEntity.delay,
+          transition: this.editEntity.transition,
+          font: this.editEntity.font,
+          align: this.editEntity.align,
+          fontColor: this.editEntity.fontColor,
+          fontSize: this.editEntity.fontSize,
+          sizeType: sizeType,
+          templateType: this.cmsTemplateTypeSelected,
+        };
+
+        api_saveCmsTemplate(cmsTemplateEntity).then(res => {
+          this.$Notice.success({
+            title: '成功提示',
+            desc: '数据保存成功！'
+          });
+          this.cmsTemplateTypeModal = false;
+        }).catch(err => {
+
+        })
+      },
+
       //初始化表单的属性值
       initCmsEntity() {
         this.editEntity = {
@@ -340,6 +434,8 @@
     mounted: function () {
       this.$nextTick(function () {
         this.getDics();
+        this.listCmsSizeType();
+        this.listCmsTemplateType();
         this.initCmsEntity()
       })
     }
@@ -350,7 +446,7 @@
     white-space: nowrap;
     display: flex;
     justify-content: center;
-    /*align-items: center;*/
+    align-items: center;
     background-color: black;
     margin: 0 auto
   }

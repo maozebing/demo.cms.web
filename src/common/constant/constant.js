@@ -77,11 +77,11 @@ const FONT_COLOR = [
 const ALIGN_TYPE = [
   {
     dicValue: 401,
-    dicName: '居左'
+    dicName: '居中'
   },
   {
     dicValue: 402,
-    dicName: '居中'
+    dicName: '居左'
   },
   {
     dicValue: 403,

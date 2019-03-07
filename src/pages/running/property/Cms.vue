@@ -1,147 +1,142 @@
 <template>
-  <Modal v-model="showProperty" :showProperty="showProperty" fullscreen title="情报板发送">
-    <vue-tabs>
-      <v-tab title="信息发送">
-        <Row :gutter="8" class="margin-top">
-          <Col span="12">
-            <div class="cms-send-display" :style="{width: editEntity.width + 'px',height: editEntity.height + 'px'}">
-              <div class="cms-send-display-pic" v-if="editEntity.picContent!=501">
-                <img :style="{width: editEntity.height + 'px',height: editEntity.height + 'px'}"
-                     :src="'../../../../static/images/cmsImg/' + editEntity.picContent + '.png'"/>
-              </div>
-              <div id="messageShow" class="cms-send-display-content"
-                   :style="{width: editEntity.picContent!=501?editEntity.width-editEntity.height:editEntity.width+ 'px',color: getFontColor(editEntity.fontColor) + '',fontFamily: ''+ getFontFamily(editEntity.font) +'' ,fontSize: getFontSize(editEntity.fontSize)+ 'px',lineHeight: getFontSize(editEntity.fontSize) + 'px',textAlign: getAlign(editEntity.align)}">
+  <Modal v-model="showProperty" :showProperty="showProperty" fullscreen footer-hide title="情报板发送">
+    <div class="cms-edit">
+      <Row :gutter="8" class="margin-top">
+        <Col span="12">
+          <div class="cms-send-display" :style="{width: editEntity.width + 'px',height: editEntity.height + 'px'}">
+            <div class="cms-send-display-pic" v-if="editEntity.picContent!=501">
+              <img :style="{width: editEntity.height + 'px',height: editEntity.height + 'px'}"
+                   :src="'../../../../static/images/cmsPic/' + editEntity.picContent + '.png'"/>
+            </div>
+            <div id="messageShow" class="cms-send-display-content"
+                 :style="{width: editEntity.picContent!=501?editEntity.width-editEntity.height:editEntity.width+ 'px',color: getFontColor(editEntity.fontColor) + '',fontFamily: ''+ getFontFamily(editEntity.font) +'' ,fontSize: getFontSize(editEntity.fontSize)+ 'px',lineHeight: getFontSize(editEntity.fontSize) + 'px',textAlign: getAlign(editEntity.align)}">
 
-              </div>
             </div>
-            <Row class="margin-top">
-              <i-col span="3">
-                <span>文字内容：<span style="color: red">*</span></span>
-              </i-col>
-              <i-col span="21">
-                <Input v-model="editEntity.content" type="textarea" :rows="3" placeholder="请输入要发送的内容..."></Input>
-              </i-col>
-            </Row>
-            <Row class="margin-top">
-              <i-col span="3">
-                <span>图片内容：<span style="color: red">*</span></span>
-              </i-col>
-              <i-col span="21">
-                <Select v-model="editEntity.picContent">
-                  <Option v-for="item in dicData.cmsPicTypeList" :value="item.dicValue" :key="item.dicValue">
-                    {{ item.dicName}}
-                  </Option>
-                </Select>
-              </i-col>
-            </Row>
-            <Row class="margin-top">
-              <i-col span="3">
-                <span>播放方式：<span style="color: red">*</span></span>
-              </i-col>
-              <i-col span="8">
-                <Select placement="top" v-model="editEntity.transition">
-                  <Option v-for="item in dicData.playTypeList" :value="item.dicValue" :key="item.dicValue">
-                    {{ item.dicName}}
-                  </Option>
-                </Select>
-              </i-col>
-              <i-col span="3" offset="2">
-                <span>字体颜色：<span style="color: red">*</span></span>
-              </i-col>
-              <i-col span="8">
-                <Select placement="top" v-model="editEntity.fontColor">
-                  <Option v-for="item in dicData.fontColorList" :value="item.dicValue" :key="item.dicValue">
-                    {{ item.dicName }}
-                  </Option>
-                </Select>
-              </i-col>
-            </Row>
-            <Row class="margin-top">
-              <i-col span="3">
-                <span>字体大小：<span style="color: red">*</span></span>
-              </i-col>
-              <i-col span="8">
-                <Select placement="top" v-model="editEntity.fontSize">
-                  <Option v-for="item in dicData.fontSizeList" :value="item.dicValue" :key="item.dicValue">
-                    {{ item.dicName}}
-                  </Option>
-                </Select>
-              </i-col>
-              <i-col span="3" offset="2">
-                <span>字体类型：<span style="color: red">*</span></span>
-              </i-col>
-              <i-col span="8">
-                <Select placement="top" v-model="editEntity.font">
-                  <Option v-for="item in dicData.fontTypeList" :value="item.dicValue" :key="item.dicValue">
-                    {{ item.dicName}}
-                  </Option>
-                </Select>
-              </i-col>
-            </Row>
-            <Row class="margin-top">
-              <i-col span="3">
-                <span>对齐方式：<span style="color: red">*</span></span>
-              </i-col>
-              <i-col span="8">
-                <Select placement="top" v-model="editEntity.align">
-                  <Option v-for="item in dicData.alignTypeList" :value="item.dicValue" :key="item.dicValue">
-                    {{ item.dicName }}
-                  </Option>
-                </Select>
-              </i-col>
-              <i-col span="3" offset="2">
-                <span>驻留时间：<span style="color: red">*</span></span>
-              </i-col>
-              <i-col span="8">
-                <Input placeholder="请输入" v-model="editEntity.delay" style="width: 100px;" :maxlength="7"/>&nbsp;&nbsp;秒
-              </i-col>
-            </Row>
-            <div style="height: 40px;text-align: right;margin-top: 20px">
-              <Button type="primary" @click="">添加到常用库</Button>
-              <Button type="primary" @click="">选择常用库</Button>
-              <Button type="primary" @click="">选择情报板</Button>
-              <Button type="primary" @click="">添加到列表</Button>
-            </div>
-          </Col>
-          <Col span="12">
-            <div style="border-bottom: #4d667d 1px solid;margin-top: 10px">发送列表：</div>
-            <div style="height: 65px;width:100%;border-bottom: #4d667d 1px solid;overflow-x: auto">
-              <Tag color="blue" v-for="item in cmsSelectedList" :key="item.id">{{item.cmsName}}</Tag>
-            </div>
-            <div style="border-bottom: #4d667d 1px solid;">发送内容：</div>
-            <div>
-              <div v-for="(item,index) in cmsSendList">
-                <table>
-                  <tr>
-                    <td>
-                      <div @click="cmsSendItemClick(item)" class="cms-send-display"
-                           :style="{width: item.width + 'px',height: item.height + 'px'}">
-                        <div class="cms-send-display-pic" v-if="item.picContent!=501">
-                          <img :style="{width: item.height + 'px',height: item.height + 'px'}"
-                               :src="'../../../../static/images/cmsImg/' + item.picContent + '.png'"/>
-                        </div>
-                        <div class="cms-send-display-content"
-                             :style="{width: item.picContent!=501?item.width-item.height:item.width+ 'px',color: getFontColor(item.fontColor) + '',fontFamily: ''+ getFontFamily(item.font) +'' ,fontSize: getFontSize(editEntity.fontSize) + 'px',lineHeight: getFontSize(editEntity.fontSize) + 'px',textAlign: getAlign(item.align)}">
-                          <div style="white-space:nowrap;" v-for="v in item.contentArr">{{v}}</div>
-                        </div>
+          </div>
+          <Row class="margin-top">
+            <i-col span="3">
+              <span>文字内容：<span style="color: red">*</span></span>
+            </i-col>
+            <i-col span="21">
+              <Input v-model="editEntity.content" type="textarea" :rows="3" placeholder="请输入要发送的内容..."></Input>
+            </i-col>
+          </Row>
+          <Row class="margin-top">
+            <i-col span="3">
+              <span>图片内容：<span style="color: red">*</span></span>
+            </i-col>
+            <i-col span="21">
+              <Select v-model="editEntity.picContent">
+                <Option v-for="item in dicData.cmsPicTypeList" :value="item.dicValue" :key="item.dicValue">
+                  {{ item.dicName}}
+                </Option>
+              </Select>
+            </i-col>
+          </Row>
+          <Row class="margin-top">
+            <i-col span="3">
+              <span>播放方式：<span style="color: red">*</span></span>
+            </i-col>
+            <i-col span="8">
+              <Select placement="top" v-model="editEntity.transition">
+                <Option v-for="item in dicData.playTypeList" :value="item.dicValue" :key="item.dicValue">
+                  {{ item.dicName}}
+                </Option>
+              </Select>
+            </i-col>
+            <i-col span="3" offset="2">
+              <span>字体颜色：<span style="color: red">*</span></span>
+            </i-col>
+            <i-col span="8">
+              <Select placement="top" v-model="editEntity.fontColor">
+                <Option v-for="item in dicData.fontColorList" :value="item.dicValue" :key="item.dicValue">
+                  {{ item.dicName }}
+                </Option>
+              </Select>
+            </i-col>
+          </Row>
+          <Row class="margin-top">
+            <i-col span="3">
+              <span>字体大小：<span style="color: red">*</span></span>
+            </i-col>
+            <i-col span="8">
+              <Select placement="top" v-model="editEntity.fontSize">
+                <Option v-for="item in dicData.fontSizeList" :value="item.dicValue" :key="item.dicValue">
+                  {{ item.dicName}}
+                </Option>
+              </Select>
+            </i-col>
+            <i-col span="3" offset="2">
+              <span>字体类型：<span style="color: red">*</span></span>
+            </i-col>
+            <i-col span="8">
+              <Select placement="top" v-model="editEntity.font">
+                <Option v-for="item in dicData.fontTypeList" :value="item.dicValue" :key="item.dicValue">
+                  {{ item.dicName}}
+                </Option>
+              </Select>
+            </i-col>
+          </Row>
+          <Row class="margin-top">
+            <i-col span="3">
+              <span>对齐方式：<span style="color: red">*</span></span>
+            </i-col>
+            <i-col span="8">
+              <Select placement="top" v-model="editEntity.align">
+                <Option v-for="item in dicData.alignTypeList" :value="item.dicValue" :key="item.dicValue">
+                  {{ item.dicName }}
+                </Option>
+              </Select>
+            </i-col>
+            <i-col span="3" offset="2">
+              <span>驻留时间：<span style="color: red">*</span></span>
+            </i-col>
+            <i-col span="8">
+              <Input placeholder="请输入" v-model="editEntity.delay" style="width: 100px;" :maxlength="7"/>&nbsp;&nbsp;秒
+            </i-col>
+          </Row>
+          <div style="height: 40px;text-align: right;margin-top: 20px">
+            <Button type="primary" @click="">添加到常用库</Button>
+            <Button type="primary" @click="">选择常用库</Button>
+            <Button type="primary" @click="">选择情报板</Button>
+            <Button type="primary" @click="addToSendList">添加到列表</Button>
+          </div>
+        </Col>
+        <Col span="12">
+          <div style="border-bottom: #4d667d 1px solid;margin-top: 10px">发送列表：</div>
+          <div style="height: 65px;width:100%;border-bottom: #4d667d 1px solid;overflow-x: auto">
+            <Tag color="blue" v-for="item in cmsSelectedList" :key="item.id">{{item.cmsName}}</Tag>
+          </div>
+          <div style="border-bottom: #4d667d 1px solid;">发送内容：</div>
+          <div>
+            <div v-for="(item,index) in cmsSendList">
+              <table>
+                <tr>
+                  <td>
+                    <div @click="cmsSendItemClick(item)" class="cms-send-display"
+                         :style="{width: item.width + 'px',height: item.height + 'px'}">
+                      <div class="cms-send-display-pic" v-if="item.picContent!=501">
+                        <img :style="{width: item.height + 'px',height: item.height + 'px'}"
+                             :src="'../../../../static/images/cmsPic/' + item.picContent + '.png'"/>
                       </div>
-                    </td>
-                    <td>
-                      <div style="display: inline-block;padding-left: 10px;">
-                        <div class="closeBtn" @click="deleteCmsSendItem(index)">
-                        </div>
+                      <div class="cms-send-display-content"
+                           :style="{width: item.picContent!=501?item.width-item.height:item.width+ 'px',color: getFontColor(item.fontColor) + '',fontFamily: ''+ getFontFamily(item.font) +'' ,fontSize: getFontSize(editEntity.fontSize) + 'px',lineHeight: getFontSize(editEntity.fontSize) + 'px',textAlign: getAlign(item.align)}">
+                        <div style="white-space:nowrap;" v-for="v in item.contentArr">{{v}}</div>
                       </div>
-                    </td>
-                  </tr>
-                </table>
-              </div>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="cms-send-list-delete">
+                      <div class="cms-send-list-delete-btn" @click="deleteCmsSendItem(index)">
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+              </table>
             </div>
-          </Col>
-        </Row>
-      </v-tab>
-    </vue-tabs>
-    <div slot="footer">
-      <Button type="primary" @click="handleCloseClick">关闭</Button>
+          </div>
+        </Col>
+      </Row>
     </div>
   </Modal>
 </template>
@@ -187,7 +182,7 @@
           cmsPicTypeList: []
         },
         cmsSelectedList: [],
-        cmsSendList:[]
+        cmsSendList: []
       }
     },
     watch: {
@@ -223,15 +218,46 @@
           font: this.dicData.fontTypeList[0].dicValue,
           align: this.dicData.alignTypeList[0].dicValue,
           delay: 5,
-          height: 48,
-          width: 96
+          height: this.propertyValue.data.height,
+          width: this.propertyValue.data.width
         }
       },
-      cmsSendItemClick(){
+
+      addToSendList() {
+        if (this.editEntity.content == "") {
+          this.$Notice.warning({
+            title: '警告提示',
+            desc: '发送内容不能为空！'
+          });
+          return
+        }
+        let cmsSendEntity = {
+          height: this.editEntity.height,
+          width: this.editEntity.width,
+          content: this.editEntity.content,
+          picContent: this.editEntity.picContent,
+          delay: this.editEntity.delay,
+          transition: this.editEntity.transition,
+          font: this.editEntity.font,
+          align: this.editEntity.align,
+          fontColor: this.editEntity.fontColor,
+          fontSize: this.editEntity.fontSize
+        };
+        if (cmsSendEntity.content.indexOf("\n") != -1) {
+          cmsSendEntity.contentArr = cmsSendEntity.content.split("\n");
+        } else {
+          let arr = new Array();
+          arr.push(cmsSendEntity.content);
+          cmsSendEntity.contentArr = arr;
+        }
+        this.cmsSendList.push(cmsSendEntity);
+      },
+
+      cmsSendItemClick() {
 
       },
-      deleteCmsSendItem(){
-
+      deleteCmsSendItem(index) {
+        this.cmsSendList.splice(index, 1)
       },
       getFontColor(color) {
         let colorR = 'green';
@@ -324,7 +350,7 @@
     white-space: nowrap;
     display: flex;
     justify-content: center;
-    align-items: center;
+    /*align-items: center;*/
     background-color: black;
     margin: 0 auto
   }
@@ -342,5 +368,17 @@
 
   .margin-top {
     margin-top: 10px;
+  }
+
+  .cms-send-list-delete {
+    display: inline-block;
+    padding-left: 10px;
+  }
+
+  .cms-send-list-delete-btn {
+    background-image: url('../../../../static/images/common/btn_delete.png');
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
   }
 </style>

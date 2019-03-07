@@ -2,7 +2,7 @@
   <div>
     <!-- 地图容器 -->
     <div id="mapNode" :style="{height: mapHeight + 'px'}"></div>
-    <Cms v-model="showModal" :showProperty="showModal" :propertyValue="propertyData"/>
+    <Cms v-if="showModal" :showProperty="showModal" :propertyValue="propertyData"/>
   </div>
 </template>
 <script type="text/ecmascript-6">
@@ -56,7 +56,6 @@
 
         let markers = [];
         params.data.forEach(v => {
-          console.log(v)
           if (v.longitude != null && v.latitude != null) {
             if (v.normal == 1) {
               image = "../../../static/images/marker/marker_cms24.png";

@@ -6,7 +6,7 @@
         <Col span="20" class="item-card-content">
           <Row class="item-card-content-title">
             <Col span="24" class="item-card-content-title-p">
-              {{item.name}}
+              {{item.cmsName}}
             </Col>
           </Row>
           <Row class="item-card-content-remark">
@@ -17,7 +17,7 @@
           </Row>
         </Col>
         <Col span="4" class="item-card-title">
-          <div v-if="item.status==1" class="normal">
+          <div v-if="item.normal==1" class="normal">
             正常
           </div>
           <div v-else="" class="off-line">
@@ -30,28 +30,14 @@
 </template>
 <script>
   import Bus from '../../../bus/bus'
+  import {api_getCmss} from "../../../axios/api/cms_api";
 
   export default {
     components: {},
     data() {
       return {
         contentHeight: 0,
-        cmsData: [
-          {
-            name: '大湾互通情报板',
-            roadCode: 'G30',
-            directionCode: 1,
-            mileage: 'K450+100',
-            status: 1
-          },
-          {
-            name: '大屿山情报板',
-            roadCode: 'G30',
-            directionCode: 1,
-            mileage: 'K480+100',
-            status: 0
-          }
-        ],
+        cmsData: [],
       }
     },
     methods: {
@@ -60,34 +46,19 @@
       },
 
       initData() {
-        this.cmsData = [
-          {
-            name: '大湾互通情报板',
-            roadCode: 'G30',
-            directionCode: 1,
-            mileage: 'K450+100',
-            status: 1,
-            longitude: 100.79957,
-            latitude: 37.243287
-          },
-          {
-            name: '大屿山情报板',
-            roadCode: 'G30',
-            directionCode: 1,
-            mileage: 'K480+100',
-            status: 0,
-            longitude: 100.99957,
-            latitude: 37.443287
-          }
-        ];
+        api_getCmss({}).then(res=>{
+          this.cmsData=res.data;
 
-        let params = {
-          type: 1,
-          data: this.cmsData
-        };
+          let params = {
+            type: 1,
+            data: res.data
+          };
 
-        //通知Map组件向地图中添加标注
-        Bus.$emit("running_resource_marker_add", params);
+          //通知Map组件向地图中添加标注
+          Bus.$emit("running_resource_marker_add", params);
+        }).catch(err=>{
+
+        });
       },
 
       eventClick(item) {

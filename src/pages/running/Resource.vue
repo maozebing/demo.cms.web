@@ -35,7 +35,7 @@
     left: 0px;
     top: 70px;
     background-color: rgba(255, 255, 255, 0.8);
-    z-index: 999;
+    z-index: 899;
   }
 
   .resource-card {

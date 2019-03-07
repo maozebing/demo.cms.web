@@ -56,8 +56,9 @@
 
         let markers = [];
         params.data.forEach(v => {
+          console.log(v)
           if (v.longitude != null && v.latitude != null) {
-            if (v.status == 1) {
+            if (v.normal == 1) {
               image = "../../../static/images/marker/marker_cms24.png";
             } else {
               image = "../../../static/images/marker/marker_cmsError24.png";

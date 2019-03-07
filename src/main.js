@@ -6,9 +6,14 @@ import router from './router'
 import iView from 'iview'
 import 'iview/dist/styles/iview.css'
 import 'vue-nav-tabs/themes/vue-tabs.css'
+import constant from './common/constant/constant'
+import Tooltip from 'vue-directive-tooltip';
+import 'vue-directive-tooltip/css/index.css';
 
 Vue.use(iView);
-Vue.config.productionTip = false
+Vue.use(Tooltip);
+Vue.prototype.$constant = constant;
+Vue.config.productionTip = false;
 
 /* eslint-disable no-new */
 new Vue({

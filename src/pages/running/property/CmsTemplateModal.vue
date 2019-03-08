@@ -4,7 +4,7 @@
     <div style="height: 450px;padding: 5px">
       <Row>
         <Col span="24">
-          <Form inline style="text-align: left;margin-left:10px;margin-bottom: -14px">
+          <Form inline>
             <FormItem>
               <span>查询条件:</span>
             </FormItem>

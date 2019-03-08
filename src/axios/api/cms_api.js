@@ -4,6 +4,9 @@ export const api_listCmsSizeType = p => get('/cms/type/size', p);
 
 
 //获取情报板常用库模板数据
+export const api_listCmsTemplateByTypeAndSize=p=>get('/cms/template/type/size',p);
+
+
 export const api_getCmsTemplatesByCondition = p => get('/cmstemplate/condition', p);
 //新增情报板常用库模板
 export const api_saveCmsTemplate = p => post('/cms/template', p);

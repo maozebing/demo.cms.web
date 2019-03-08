@@ -97,7 +97,7 @@
           </Row>
           <div style="height: 40px;text-align: right;margin-top: 20px">
             <Button type="primary" @click="openCmsTemplateTypeModal">添加到常用库</Button>
-            <Button type="primary" @click="">选择常用库</Button>
+            <Button type="primary" @click="openCmsTemplateModal">选择常用库</Button>
             <Button type="primary" @click="">选择情报板</Button>
             <Button type="primary" @click="addToSendList">添加到列表</Button>
           </div>
@@ -120,7 +120,7 @@
                              :src="'../../../../static/images/cmsPic/' + item.picContent + '.png'"/>
                       </div>
                       <div class="cms-send-display-content"
-                           :style="{width: item.picContent!=501?item.width-item.height:item.width+ 'px',color: getFontColor(item.fontColor) + '',fontFamily: ''+ getFontFamily(item.font) +'' ,fontSize: getFontSize(editEntity.fontSize) + 'px',lineHeight: getFontSize(editEntity.fontSize) + 'px',textAlign: getAlign(item.align)}">
+                           :style="{width: item.picContent!=501?item.width-item.height:item.width+ 'px',color: getFontColor(item.fontColor) + '',fontFamily: ''+ getFontFamily(item.font) +'' ,fontSize: getFontSize(item.fontSize) + 'px',lineHeight: getFontSize(item.fontSize) + 'px',textAlign: getAlign(item.align)}">
                         <div style="white-space:nowrap;" v-for="v in item.contentArr">{{v}}</div>
                       </div>
                     </div>
@@ -141,6 +141,10 @@
     <CmsTemplateTypeModal :cmsTemplateTypeModalShow="cmsTemplateTypeModal"
                           :cmsTemplateTypePropertyData="cmsTemplateTypePropertyData"
                           @close-cms-template-type-modal="closeCmsTemplateTypeModal"></CmsTemplateTypeModal>
+    <CmsTemplateModal :cmsTemplateModal="cmsTemplateModal"
+                      :cmsTemplatePropertyData="cmsTemplatePropertyData"
+                      @cms-template-selected="cmsTemplateSelected"
+                      @close-cms-template-modal="closeCmsTemplateModal"></CmsTemplateModal>
   </div>
 </template>
 <script>
@@ -149,11 +153,12 @@
   import {cloneObj} from "../../../common/utils/util";
   import {getFontColor, getFontFamily, getFontSize, getAlign} from "../../../common/utils/dic-util";
   import CmsTemplateTypeModal from './CmsTemplateTypeModal'
+  import CmsTemplateModal from './CmsTemplateModal'
 
   export default {
     name: 'cmsProperty',
     components: {
-      VueTabs, VTab, CmsTemplateTypeModal
+      VueTabs, VTab, CmsTemplateTypeModal, CmsTemplateModal
     },
     props: {
       showProperty: {
@@ -182,6 +187,9 @@
         cmsTemplateTypeModal: false,
         cmsTemplateTypePropertyData: {},
         cmsTemplateTypeSelected: '',
+
+        cmsTemplateModal: false,
+        cmsTemplatePropertyData: {}
       }
     },
     watch: {
@@ -243,39 +251,44 @@
         this.cmsTemplateTypeModal = false;
       },
 
-      //保存情报板模板数据
-      saveCmsTemplate() {
-        let sizeType;
-        this.cmsSizeTypeList.forEach(v => {
-          if (v.width == this.propertyValue.data.width && v.height == this.propertyValue.data.height) {
-            sizeType = v.id;
-          }
-        });
-
-        let cmsTemplateEntity = {
-          height: this.editEntity.height,
-          width: this.editEntity.width,
-          content: this.editEntity.content,
-          picContent: this.editEntity.picContent,
-          delay: this.editEntity.delay,
-          transition: this.editEntity.transition,
-          font: this.editEntity.font,
-          align: this.editEntity.align,
-          fontColor: this.editEntity.fontColor,
-          fontSize: this.editEntity.fontSize,
-          sizeType: sizeType,
-          templateType: this.cmsTemplateTypeSelected,
+      //打开情报板模板选择窗口
+      openCmsTemplateModal() {
+        this.cmsTemplateModal = true;
+        this.cmsTemplatePropertyData = {
+          cmsTemplateTypeSelected: this.cmsTemplateTypeList[0].id,
+          cmsTemplateTypeList: this.cmsTemplateTypeList,
+          cmsSizeTypeList: this.cmsSizeTypeList,
+          dicData: this.dicData,
+          height: this.propertyValue.data.height,
+          width: this.propertyValue.data.width
         };
-
-        api_saveCmsTemplate(cmsTemplateEntity).then(res => {
-          this.$Notice.success({
-            title: '成功提示',
-            desc: '数据保存成功！'
-          });
-          this.cmsTemplateTypeModal = false;
-        }).catch(err => {
-
-        })
+      },
+      cmsTemplateSelected(data) {
+        let cmsSendEntity = {
+          height: data.height,
+          width: data.width,
+          content: data.content,
+          picContent: data.picContent,
+          delay: data.delay,
+          transition: data.transition,
+          font: data.font,
+          align: data.align,
+          fontColor: data.fontColor,
+          fontSize: data.fontSize,
+          operator: sessionStorage.getItem("account")
+        };
+        if (cmsSendEntity.content.indexOf("\n") != -1) {
+          cmsSendEntity.contentArr = cmsSendEntity.content.split("\n");
+        } else {
+          let arr = new Array();
+          arr.push(cmsSendEntity.content);
+          cmsSendEntity.contentArr = arr;
+        }
+        this.cmsSendList.push(cmsSendEntity);
+        this.cmsTemplateModal = false;
+      },
+      closeCmsTemplateModal() {
+        this.cmsTemplateModal = false;
       },
 
       //初始化表单的属性值
@@ -358,39 +371,5 @@
   }
 </script>
 <style scoped>
-  .cms-send-display {
-    white-space: nowrap;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: black;
-    margin: 0 auto
-  }
-
-  .cms-send-display-pic {
-    display: block;
-    float: left
-  }
-
-  .cms-send-display-content {
-    display: block;
-    float: left;
-    margin: 0 auto;
-  }
-
-  .margin-top {
-    margin-top: 10px;
-  }
-
-  .cms-send-list-delete {
-    display: inline-block;
-    padding-left: 10px;
-  }
-
-  .cms-send-list-delete-btn {
-    background-image: url('../../../../static/images/common/btn_delete.png');
-    width: 18px;
-    height: 18px;
-    cursor: pointer;
-  }
+  @import url("../../../assets/css/cms.css");
 </style>

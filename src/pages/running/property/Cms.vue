@@ -317,6 +317,7 @@
         }
       },
 
+      //编辑的发送内容添加到发送列表
       addToSendList() {
         if (this.editEntity.content == "") {
           this.$Notice.warning({

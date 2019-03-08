@@ -2,19 +2,19 @@
   <div>
     <!-- 地图容器 -->
     <div id="mapNode" :style="{height: mapHeight + 'px'}"></div>
-    <Cms v-if="showModal" :showProperty="showModal" :propertyValue="propertyData"/>
+    <Base v-model="showModal" :showProperty="showModal" :propertyValue="propertyData" @close-property="showModal=false"/>
   </div>
 </template>
 <script type="text/ecmascript-6">
   import MapUtil from "../../common/utils/amap-util";
   import Bus from '../../bus/bus'
-  import Cms from './property/Cms.vue'
+  import Base from './property/Base.vue'
 
   let mapHelper = new MapUtil();
   let map;
   let cmsLayer;
   export default {
-    components: {Cms},
+    components: {Base},
     data() {
       return {
         mapHeight: document.body.clientHeight - 60,

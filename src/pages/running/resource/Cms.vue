@@ -12,7 +12,7 @@
           <Row class="item-card-content-remark">
             <Col span="24">
               <span>路线：{{item.roadCode}}（{{item.directionCode == 1 ? '上行' : '下行'}}）</span>,
-              <span>桩号：{{item.mileage}}</span>
+              <span>桩号：{{formatMileAge(item.mileage)}}</span>
             </Col>
           </Row>
         </Col>
@@ -31,11 +31,13 @@
 <script>
   import Bus from '../../../bus/bus'
   import {api_listCms} from "../../../axios/api/cms_api";
+  import {formatMileAge} from "../../../common/utils/util";
 
   export default {
     components: {},
     data() {
       return {
+        formatMileAge,
         contentHeight: 0,
         cmsData: [],
       }

@@ -1,5 +1,5 @@
 <template>
-  <Modal v-model="showProperty" :showProperty="showProperty" fullscreen footer-hide title="情报板发送">
+  <div>
     <div class="cms-edit">
       <Row :gutter="8" class="margin-top">
         <Col span="12">
@@ -138,63 +138,30 @@
         </Col>
       </Row>
     </div>
-    <Modal
-      v-model="cmsTemplateTypeModal"
-      title="常用库类型列表" :styles="{top: '50px'}">
-      <div>
-        <Row>
-          <Col span="24">
-            <Form inline style="text-align: left;margin-left:10px;margin-bottom: -14px">
-              <FormItem>
-                <span>常用库类型:</span>
-              </FormItem>
-              <Form-item>
-                <Select v-model="cmsTemplateTypeSelected" style="width:200px;text-align: left">
-                  <Option v-for="item in cmsTemplateTypeList" :value="item.id" :key="item.id">
-                    {{ item.name }}
-                  </Option>
-                </Select>
-              </Form-item>
-            </Form>
-          </Col>
-        </Row>
-      </div>
-      <div slot="footer">
-        <Button type="text" @click="cmsTemplateTypeModal=false">关闭</Button>
-        <Button type="primary" @click="saveCmsTemplate">确定</Button>
-      </div>
-    </Modal>
-  </Modal>
+    <CmsTemplateTypeModal :cmsTemplateTypeModalShow="cmsTemplateTypeModal"
+                          :cmsTemplateTypePropertyData="cmsTemplateTypePropertyData"
+                          @close-cms-template-type-modal="closeCmsTemplateTypeModal"></CmsTemplateTypeModal>
+  </div>
 </template>
 <script>
   import {VueTabs, VTab} from 'vue-nav-tabs'
-  import {api_listCmsSizeType, api_listCmsTemplateType,api_saveCmsTemplate} from "../../../axios/api/cms_api";
+  import {api_listCmsSizeType, api_listCmsTemplateType, api_saveCmsTemplate} from "../../../axios/api/cms_api";
+  import {cloneObj} from "../../../common/utils/util";
+  import {getFontColor, getFontFamily, getFontSize, getAlign} from "../../../common/utils/dic-util";
+  import CmsTemplateTypeModal from './CmsTemplateTypeModal'
 
   export default {
     name: 'cmsProperty',
     components: {
-      VueTabs, VTab
-    },
-    model: {
-      prop: 'showProperty',
-      event: 'close-property'
+      VueTabs, VTab, CmsTemplateTypeModal
     },
     props: {
       showProperty: {
-        type: Boolean,
-        default() {
-          return false
-        }
+        type: Boolean
       },
       propertyValue: {
         type: Object,
-        require: true,
-        default() {
-          return {
-            type: 1,
-            data: {},
-          }
-        }
+        require: true
       }
     },
     data() {
@@ -213,6 +180,7 @@
         cmsSizeTypeList: [],
         cmsTemplateTypeList: [],
         cmsTemplateTypeModal: false,
+        cmsTemplateTypePropertyData: {},
         cmsTemplateTypeSelected: '',
       }
     },
@@ -226,9 +194,6 @@
       }
     },
     methods: {
-      handleCloseClick() {
-        this.$emit('close-property', false)
-      },
       //获取字典
       getDics() {
         this.dicData.fontTypeList = this.$constant.FONT_TYPE;
@@ -238,6 +203,7 @@
         this.dicData.cmsPicTypeList = this.$constant.CMS_PIC_TYPE;
         this.dicData.playTypeList = this.$constant.PLAY_TYPE;
       },
+
       //获取情报板大小类型
       listCmsSizeType() {
         api_listCmsSizeType({}).then(res => {
@@ -246,6 +212,7 @@
 
         })
       },
+
       //获取情报板模板类型
       listCmsTemplateType() {
         api_listCmsTemplateType({}).then(res => {
@@ -254,8 +221,9 @@
 
         })
       },
+
       //打开情报板模板类型选择窗口
-      openCmsTemplateTypeModal(){
+      openCmsTemplateTypeModal() {
         if (this.editEntity.content == "") {
           this.$Notice.warning({
             title: '警告提示',
@@ -264,8 +232,17 @@
           return
         }
         this.cmsTemplateTypeModal = true;
-        this.cmsTemplateTypeSelected = this.cmsTemplateTypeList[0].id;
+        this.cmsTemplateTypePropertyData = {
+          cmsTemplateTypeSelected: this.cmsTemplateTypeList[0].id,
+          cmsTemplateTypeList: this.cmsTemplateTypeList,
+          cmsSizeTypeList: this.cmsSizeTypeList,
+          cmsEditEntity: this.editEntity
+        };
       },
+      closeCmsTemplateTypeModal() {
+        this.cmsTemplateTypeModal = false;
+      },
+
       //保存情报板模板数据
       saveCmsTemplate() {
         let sizeType;
@@ -348,88 +325,26 @@
         this.cmsSendList.push(cmsSendEntity);
       },
 
-      cmsSendItemClick() {
-
+      //发送列表的发送内容重新编辑
+      cmsSendItemClick(item) {
+        this.editEntity = cloneObj(item);
       },
+
+      //删除发送列表的发送内容
       deleteCmsSendItem(index) {
         this.cmsSendList.splice(index, 1)
       },
       getFontColor(color) {
-        let colorR = 'green';
-        if (this.dicData.fontColorList.filter((item) => {
-          return item.dicValue == color
-        }).length > 0) {
-          let t = this.dicData.fontColorList.filter((item) => {
-            return item.dicValue == color
-          })[0];
-          if (t) {
-            switch (t.dicName) {
-              case '绿色':
-                colorR = 'green';
-                break;
-              case '红色':
-                colorR = 'red';
-                break;
-              case '黄色':
-                colorR = 'yellow';
-                break;
-            }
-          }
-        }
-        return colorR
+        return getFontColor(this.dicData.fontColorList, color);
       },
       getFontFamily(font) {
-        let result = '宋体'
-        if (this.dicData.fontTypeList.filter((item) => {
-          return item.dicValue == font
-        }).length > 0) {
-          let t = this.dicData.fontTypeList.filter((item) => {
-            return item.dicValue == font
-          })[0];
-          if (t) {
-            result = t.dicName
-          }
-        }
-        return result
+        return getFontFamily(this.dicData.fontTypeList, font);
       },
       getFontSize(fontSize) {
-        let result = 16;
-        if (this.dicData.fontSizeList.filter((item) => {
-          return item.dicValue == fontSize
-        }).length > 0) {
-          let t = this.dicData.fontSizeList.filter((item) => {
-            return item.dicValue == fontSize
-          })[0];
-          if (t) {
-            result = t.dicName
-          }
-        }
-        return result
+        return getFontSize(this.dicData.fontSizeList, fontSize);
       },
       getAlign(align) {
-        let result = 'left';
-        let array = this.dicData.alignTypeList.filter((item) => {
-          return item.dicValue == align
-        });
-        if (array.length > 0) {
-          let t = this.dicData.alignTypeList.filter((item) => {
-            return item.dicValue == align
-          })[0];
-          if (t) {
-            switch (t.dicName) {
-              case '居中':
-                result = 'center';
-                break;
-              case '居左':
-                result = 'left';
-                break;
-              case '居右':
-                result = 'right';
-                break;
-            }
-          }
-        }
-        return result;
+        return getAlign(this.dicData.alignTypeList, align);
       },
     },
     mounted: function () {
